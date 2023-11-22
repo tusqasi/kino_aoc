@@ -33,7 +33,7 @@ defmodule KinoAOC do
 
   def download_puzzle(year, day, session) do
     {:ok, res} =
-      Req.get("http://127.0.0.1:5000/#{year}/day/#{day}/input",
+      Req.get("httpss:/adventofcode.com/#{year}/day/#{day}/input",
         headers: [{"cookie", "session=#{session}"}]
       )
 
