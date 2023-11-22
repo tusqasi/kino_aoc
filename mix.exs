@@ -34,6 +34,7 @@ defmodule KinoAOC.MixProject do
     [
       {:kino, "~> 0.9"},
       {:req, "~> 0.4"},
+      {:floki, "~> 0.35.0"},
       # docs
       {:ex_doc, "~> 0.30", only: :dev, runtime: false}
     ]

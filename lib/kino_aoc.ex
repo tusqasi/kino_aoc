@@ -1,4 +1,6 @@
 defmodule KinoAOC do
+  defstruct input_string: "", title: ""
+
   @moduledoc """
 
   A helper for Advent of Code (a smart cell) for Elixir [Livebook](https://github.com/livebook-dev/livebook) using [Kino](https://github.com/livebook-dev/kino).
@@ -31,12 +33,26 @@ defmodule KinoAOC do
 
   def download_puzzle(year, day, session) do
     {:ok, res} =
-      Req.get("https://adventofcode.com/#{year}/day/#{day}/input",
+      Req.get("http://127.0.0.1:5000/#{year}/day/#{day}/input",
         headers: [{"cookie", "session=#{session}"}]
       )
 
-    case res.status do
-      200 -> {:ok, String.slice(res.body, 0..-2)}
+    {:ok, question} = Req.get("https://adventofcode.com/#{year}/day/#{day}")
+
+    case {question.status, res.status }do
+      {200, 200} ->
+        input_string  = String.slice(res.body, 0..-2)
+        {:ok, document} = Floki.parse_document(question.body)
+
+        title =
+          document
+          |> Floki.find("article h2")
+          |> Floki.text()
+          |> String.replace("-", "")
+          |> String.trim()
+          |> IO.inspect()
+          {:ok, %KinoAOC{input_string: input_string, title: title}}
+
       _ -> raise "\nStatus: #{inspect(res.status)}\nError: #{inspect(String.trim(res.body))}"
     end
   end
