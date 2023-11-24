@@ -33,27 +33,31 @@ defmodule KinoAOC do
 
   def download_puzzle(year, day, session) do
     {:ok, res} =
-      Req.get("httpss:/adventofcode.com/#{year}/day/#{day}/input",
+      Req.get("https://adventofcode.com/#{year}/day/#{day}/input",
         headers: [{"cookie", "session=#{session}"}]
       )
 
     {:ok, question} = Req.get("https://adventofcode.com/#{year}/day/#{day}")
 
-    case {question.status, res.status }do
-      {200, 200} ->
-        input_string  = String.slice(res.body, 0..-2)
-        {:ok, document} = Floki.parse_document(question.body)
-
-        title =
-          document
-          |> Floki.find("article h2")
-          |> Floki.text()
-          |> String.replace("-", "")
-          |> String.trim()
-          |> IO.inspect()
-          {:ok, %KinoAOC{input_string: input_string, title: title}}
-
-      _ -> raise "\nStatus: #{inspect(res.status)}\nError: #{inspect(String.trim(res.body))}"
+    if question.status != 200 do
+      raise "\nStatus: #{inspect(res.status)}\nError: #{inspect(String.trim(res.body))}"
     end
+
+    if res.status != 200 do
+      raise "\nStatus: #{inspect(res.status)}\nError: #{inspect(String.trim(res.body))}"
+    end
+
+    input_string = String.slice(res.body, 0..-2)
+    {:ok, document} = Floki.parse_document(question.body)
+
+    title =
+      document
+      |> Floki.find("article h2")
+      |> Floki.text()
+      |> String.replace("-", "")
+      |> String.trim()
+      |> IO.inspect()
+
+    {:ok, %KinoAOC{input_string: input_string, title: title}}
   end
 end
